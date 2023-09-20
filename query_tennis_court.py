@@ -49,7 +49,36 @@ def extract_session_info(session):
 
     return session_time, session_name
 
-def find_slots(driver, date: str, place: str):
+def off_work_hours(input_string: str):
+    try:
+        # Split the string by '-' to separate the time ranges
+        time_ranges = input_string.split('-')
+
+        # Extract the start and end times from the time_ranges list
+        start_time_str = time_ranges[0].split('at')[1].strip()
+        end_time_str = time_ranges[1].strip()
+
+        # Convert the start and end times to datetime objects
+        time_format = '%H:%M'
+        start_time = datetime.strptime(start_time_str, time_format)
+        end_time = datetime.strptime(end_time_str, time_format)
+
+        # Now, you can compare these datetime objects with the specified target times (10:00 and 18:00)
+        target_time1 = datetime.strptime('10:00', time_format)
+        target_time2 = datetime.strptime('18:00', time_format)
+
+        if end_time <= target_time1:
+            return True
+        if start_time >= target_time2:
+            return True
+        else:
+            return False
+
+    except ValueError:
+        print(f"Time data '{input_string}' does not match format '%H:%M'")
+
+
+def find_slots(driver, date: str, place: str, is_weekend = True):
 
     # Navigate to the page
     driver.get(f'https://clubspark.lta.org.uk/{place}/Booking/BookByDate#?date=2023-{date}&role=guest')
@@ -75,7 +104,7 @@ def find_slots(driver, date: str, place: str):
         res = []
         for session in resource_sessions:
             item = extract_session_info(session)
-            if item[0] != "NA":
+            if item[0] != "NA" and off_work_hours(item[0]) and not is_weekend:
                 res.append(item)
             # print(item)
             # break
@@ -94,15 +123,16 @@ if len(sys.argv) > 1:  # Check if arguments are provided
         if i == 2:
             places = [arg]
 else:
-    dates = generate_dates('2023-09-17', '2023-09-17')
-    places = ['SouthwarkPark', 'PoplarRecGround', 'BethnalGreenGardens', 'RopemakersFieldLONDON', 'KingEdwardMemorialPark', 'StJohnsParkLondon', 'VictoriaParkLONDON', 'WappingGardens']
+    dates = generate_dates('2023-09-22', '2023-09-22')
+    places = ['SouthwarkPark', 'PoplarRecGround', 'BethnalGreenGardens', 'RopemakersFieldLONDON', 'KingEdwardMemorialPark', 'StJohnsParkLondon', 'VictoriaParkLONDON', 'WappingGardens', 'MillfieldsParkMiddlesex', 'LondonFieldsPark', 'SpringHillParkTennis', 'HackneyDowns', 'ClissoldParkHackney']
 
 print(dates)
 print(places)
+is_weekend = False
 
 for date in dates:
     for place in places:
-        find_slots(driver, date, place)
+        find_slots(driver, date, place, is_weekend)
 driver.quit()
 
     
