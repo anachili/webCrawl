@@ -107,8 +107,11 @@ def find_slots(driver, date: str, place: str, is_weekend = True):
         res = []
         for session in resource_sessions:
             item = extract_session_info(session)
-            if item[0] != "NA" and off_work_hours(item[0]) and not is_weekend:
-                res.append(item)
+            if item[0] != "NA":
+                if is_weekend:
+                    res.append(item)
+                elif off_work_hours(item[0]):
+                    res.append(item)
             # print(item)
             # break
 
@@ -126,13 +129,15 @@ if len(sys.argv) > 1:  # Check if arguments are provided
         if i == 2:
             places = [arg]
 else:
-    dates = generate_dates('2023-09-25', '2023-09-25')
+    dates = generate_dates('2023-09-30', '2023-09-30')
 
-places = ['SouthwarkPark', 'PoplarRecGround', 'BethnalGreenGardens', 'RopemakersFieldLONDON', 'KingEdwardMemorialPark', 'StJohnsParkLondon', 'VictoriaParkLONDON', 'WappingGardens', 'MillfieldsParkMiddlesex', 'LondonFieldsPark', 'SpringHillParkTennis', 'HackneyDowns', 'ClissoldParkHackney', 'BrunswickPark', 'BurgessParkSouthwark', 'TannerStPark']
+workday_places = ['MillfieldsParkMiddlesex', 'SouthwarkPark', 'PoplarRecGround', 'BethnalGreenGardens', 'RopemakersFieldLONDON', 'KingEdwardMemorialPark', 'StJohnsParkLondon', 'VictoriaParkLONDON', 'WappingGardens', 'LondonFieldsPark', 'SpringHillParkTennis', 'HackneyDowns', 'ClissoldParkHackney', 'BrunswickPark', 'BurgessParkSouthwark', 'TannerStPark']
+weekend_places = ['SouthwarkPark', 'PoplarRecGround', 'BethnalGreenGardens', 'RopemakersFieldLONDON', 'KingEdwardMemorialPark', 'StJohnsParkLondon', 'VictoriaParkLONDON', 'WappingGardens', 'LondonFieldsPark', 'BrunswickPark', 'BurgessParkSouthwark', 'TannerStPark']
 
+places = weekend_places
 print(dates)
 print(places)
-is_weekend = False
+is_weekend = True
 
 for date in dates:
     for place in places:
