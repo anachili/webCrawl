@@ -64,12 +64,15 @@ def off_work_hours(input_string: str):
         end_time = datetime.strptime(end_time_str, time_format)
 
         # Now, you can compare these datetime objects with the specified target times (10:00 and 18:00)
-        target_time1 = datetime.strptime('10:00', time_format)
-        target_time2 = datetime.strptime('18:00', time_format)
+        target_time1 = datetime.strptime('8:00', time_format)
+        target_time2 = datetime.strptime('10:00', time_format)
+        
+        target_time3 = datetime.strptime('18:00', time_format)
+        # target_time4 = datetime.strptime('18:00', time_format)
 
-        if end_time <= target_time1:
+        if end_time <= target_time2 and start_time >= target_time1:
             return True
-        if start_time >= target_time2:
+        if start_time >= target_time3:
             return True
         else:
             return False
@@ -123,8 +126,9 @@ if len(sys.argv) > 1:  # Check if arguments are provided
         if i == 2:
             places = [arg]
 else:
-    dates = generate_dates('2023-09-22', '2023-09-22')
-    places = ['SouthwarkPark', 'PoplarRecGround', 'BethnalGreenGardens', 'RopemakersFieldLONDON', 'KingEdwardMemorialPark', 'StJohnsParkLondon', 'VictoriaParkLONDON', 'WappingGardens', 'MillfieldsParkMiddlesex', 'LondonFieldsPark', 'SpringHillParkTennis', 'HackneyDowns', 'ClissoldParkHackney']
+    dates = generate_dates('2023-09-25', '2023-09-25')
+
+places = ['SouthwarkPark', 'PoplarRecGround', 'BethnalGreenGardens', 'RopemakersFieldLONDON', 'KingEdwardMemorialPark', 'StJohnsParkLondon', 'VictoriaParkLONDON', 'WappingGardens', 'MillfieldsParkMiddlesex', 'LondonFieldsPark', 'SpringHillParkTennis', 'HackneyDowns', 'ClissoldParkHackney', 'BrunswickPark', 'BurgessParkSouthwark', 'TannerStPark']
 
 print(dates)
 print(places)
