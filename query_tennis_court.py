@@ -49,7 +49,7 @@ def extract_session_info(session):
 
     return session_time, session_name
 
-def off_work_hours(input_string: str):
+def parse_time(input_string: str):
     try:
         # Split the string by '-' to separate the time ranges
         time_ranges = input_string.split('-')
@@ -62,23 +62,37 @@ def off_work_hours(input_string: str):
         time_format = '%H:%M'
         start_time = datetime.strptime(start_time_str, time_format)
         end_time = datetime.strptime(end_time_str, time_format)
-
-        # Now, you can compare these datetime objects with the specified target times (10:00 and 18:00)
-        target_time1 = datetime.strptime('8:00', time_format)
-        target_time2 = datetime.strptime('10:00', time_format)
-        
-        target_time3 = datetime.strptime('18:00', time_format)
-        # target_time4 = datetime.strptime('18:00', time_format)
-
-        if end_time <= target_time2 and start_time >= target_time1:
-            return True
-        if start_time >= target_time3:
-            return True
-        else:
-            return False
+        return start_time, end_time
 
     except ValueError:
         print(f"Time data '{input_string}' does not match format '%H:%M'")
+
+def is_weekend_friendly(input_string: str):
+    start_time, end_time = parse_time(input_string)
+    time_format = '%H:%M'
+
+    if start_time <= datetime.strptime('12:00', time_format):
+        return False
+    return True
+
+
+def is_workday_friendly(input_string: str):
+    start_time, end_time = parse_time(input_string)
+    time_format = '%H:%M'
+
+    # Now, you can compare these datetime objects with the specified target times (10:00 and 18:00)
+    target_time1 = datetime.strptime('8:00', time_format)
+    target_time2 = datetime.strptime('10:00', time_format)
+    
+    target_time3 = datetime.strptime('18:00', time_format)
+    # target_time4 = datetime.strptime('18:00', time_format)
+
+    if end_time <= target_time2 and start_time >= target_time1:
+        return True
+    if start_time >= target_time3:
+        return True
+    else:
+        return False
 
 
 def find_slots(driver, date: str, place: str, is_weekend = True):
@@ -109,8 +123,9 @@ def find_slots(driver, date: str, place: str, is_weekend = True):
             item = extract_session_info(session)
             if item[0] != "NA":
                 if is_weekend:
-                    res.append(item)
-                elif off_work_hours(item[0]):
+                    if is_weekend_friendly(item[0]):
+                        res.append(item)
+                elif is_workday_friendly(item[0]):
                     res.append(item)
             # print(item)
             # break
